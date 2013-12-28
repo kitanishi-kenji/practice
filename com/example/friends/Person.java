@@ -109,6 +109,7 @@ public class Person {
 		me.addPerson(a);
 		me.addPerson(b);
 		me.addPerson(c);
+		//me.addPerson(you);
 		// Aの友達はD
 		a.addPerson(d);
 		// Bの友達はいない
@@ -116,6 +117,7 @@ public class Person {
 		c.addPerson(you);
 		// Dの友達はE
 		d.addPerson(e);
+		//e.addPerson(you);
 
 		System.out.println(link(me, you));
 	}
@@ -131,12 +133,12 @@ public class Person {
 	 */
 	public static int link(Person src, Person dest) {
 		// レベル、まあ、距離か。
-		Map<String,Integer> levelArray = new HashMap<>();
+		Map<String, Integer> levelArray = new HashMap<>();
 		// 訪問した人の名前
 		List<String> visited = new ArrayList<>();
 		// 初期設定
 		int level = 0;
-		levelArray.put(src.getName(),level);
+		levelArray.put(src.getName(), level);
 		Queue<Person> queue = new LinkedList<>();
 		queue.add(src);
 		// srcに訪問
@@ -144,18 +146,24 @@ public class Person {
 		// さーQueueが空になるまで探索だ！
 		while (!queue.isEmpty()) {
 			level += 1;
-			Person person = queue.poll();
-			if (person.equals(dest))
-				return levelArray.get(dest.getName());
-			for (Person friend : person.getFriends()) {
-				if (!visited.contains(friend.getName())) {
-					visited.add(friend.getName());
-					levelArray.put(friend.getName(), level);
-					queue.add(friend);
+			// 次のレベルの全Personを検索
+			Queue<Person> work = new LinkedList<>();
+			while (!queue.isEmpty()) {
+				work.add(queue.poll());
+			}
+			while (!work.isEmpty()) {
+				Person person = work.poll();
+				if (person.equals(dest))
+					return levelArray.get(dest.getName());
+				for (Person friend : person.getFriends()) {
+					if (!visited.contains(friend.getName())) {
+						visited.add(friend.getName());
+						levelArray.put(friend.getName(), level);
+						queue.add(friend);
+					}
 				}
 			}
 		}
 		return -1;
 	}
-
 }
